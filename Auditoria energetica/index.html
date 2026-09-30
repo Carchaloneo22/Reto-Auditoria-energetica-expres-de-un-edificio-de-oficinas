@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Auditoría energética exprés de un edificio de oficinas: calidad de datos, patrones de consumo, modelo de predicción y recomendaciones.">
+<title>Auditoría energética exprés · Edificio de oficinas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="tip" id="tip" role="tooltip"></div>
+
+<nav class="topnav" aria-label="Secciones">
+  <div class="wrap topnav-in">
+    <a class="brand" href="#inicio">Auditoría energética</a>
+    <ul>
+      <li><a href="#q1">Datos</a></li>
+      <li><a href="#q2">Patrones</a></li>
+      <li><a href="#q3">Modelo</a></li>
+      <li><a href="#q4">Acciones</a></li>
+    </ul>
+    <button class="theme" id="theme" type="button" aria-label="Cambiar tema claro u oscuro">◐</button>
+  </div>
+</nav>
+
+<main class="wrap" id="inicio">
+<header class="hero">
+  <p class="meta" id="meta">Auditoría energética exprés · 45 días de mediciones horarias</p>
+  <h1>Este edificio nunca se apaga: el 42&nbsp;% de su energía se consume cuando casi no hay nadie.</h1>
+  <p class="lede" id="facadeLede">Cada ventana de la fachada es una hora medida. Cuanto más encendida la ventana, más kWh se consumieron esa hora.</p>
+
+  <div class="facade-block">
+    <div class="facade-top">
+      <p id="facadeHelp">Pase el cursor o toque una ventana para ver la hora.</p>
+      <button class="btn" id="btnFuera" type="button" aria-pressed="false">Mostrar solo horas sin operación</button>
+    </div>
+    <div class="facade" id="facade" aria-label="Mapa de calor del consumo por hora y día" role="img"></div>
+    <div class="legend"><span>menos kWh</span><span class="ramp"></span><span>más kWh</span><span class="wk-note">▪ amarillo = fin de semana</span></div>
+  </div>
+  <div class="ground"></div>
+
+  <div class="facts" id="facts"></div>
+</header>
+
+<section class="q" id="q1">
+  <div class="qhead"><span class="qn">1</span><h2>¿Podemos confiar en estos datos?</h2>
+  <p class="lede">Sí, después de una limpieza mínima. Los problemas son pocos, aislados y todos tienen una corrección defendible.</p></div>
+  <table class="rtable">
+    <thead><tr><th>Dimensión</th><th>Qué revisamos</th><th>Hallazgo</th><th>Decisión</th></tr></thead>
+    <tbody id="audit"></tbody>
+  </table>
+  <p class="insight">Resultado: <b class="num">1.080 horas</b> limpias (45 días × 24 h), sin faltantes ni duplicados. El pico de <b>55,8 kWh</b> del lunes 20 de abril a las 07:00 se conserva: la demanda medida (52,4 kW) lo confirma y coincide con el arranque del edificio tras el fin de semana.</p>
+</section>
+
+<section class="q" id="q2">
+  <div class="qhead"><span class="qn">2</span><h2>¿Cuándo y por qué consume energía?</h2>
+  <p class="lede">Consume cuando hay gente, pero nunca baja de una carga base que no depende de nadie.</p></div>
+
+  <div class="panel">
+    <h3>Perfil horario promedio</h3>
+    <div class="seg" role="group" aria-label="Tipo de día">
+      <button type="button" aria-pressed="true" data-k="ambos">Ambos</button><button type="button" aria-pressed="false" data-k="Laboral">Laboral</button><button type="button" aria-pressed="false" data-k="Fin de semana">Fin de semana</button>
+    </div>
+    <div class="chart-box" id="chProfile"></div>
+    <p class="insight" id="insProfile"></p>
+  </div>
+
+  <div class="two">
+    <div class="panel">
+      <h3>Energía vs ocupación</h3>
+      <p class="cap">Cada punto es una hora. Verde azulado: en horario de operación.</p>
+      <div class="chart-box" id="chScatter"></div>
+      <p class="insight" id="insScatter"></p>
+    </div>
+    <div class="panel">
+      <h3>Temperatura en horario laboral</h3>
+      <p class="cap">Consumo promedio de 07 a 19 h según la temperatura exterior.</p>
+      <div class="chart-box" id="chTemp"></div>
+      <p class="insight">La temperatura actúa en “U”: el consumo es mínimo entre 20 y 24 °C y sube con frío o calor. Por eso su correlación lineal parece baja aunque sí importa.</p>
+    </div>
+  </div>
+</section>
+
+<section class="q" id="q3">
+  <div class="qhead"><span class="qn">3</span><h2>¿Se puede predecir el consumo con ocupación y temperatura?</h2>
+  <p class="lede">Sí. Entrenamos con los primeros 36 días y evaluamos con los últimos 9, que el modelo nunca vio.</p></div>
+  <table class="rtable">
+    <thead><tr><th>Modelo</th><th>Variables</th><th class="r">Error medio (kWh/h)</th><th class="r">R²</th></tr></thead>
+    <tbody id="models"></tbody>
+  </table>
+
+  <div class="panel">
+    <h3>Periodo de prueba: real vs predicho</h3>
+    <p class="cap">Regresión lineal con ocupación, temperatura, horario y distancia a 22 °C.</p>
+    <div class="chart-box" id="chTest"></div>
+  </div>
+
+  <div class="panel">
+    <h3>Simulador de consumo</h3>
+    <p class="cap">Mueva los controles y el modelo estima cuánta energía consumiría el edificio en esa hora.</p>
+    <div class="sim">
+      <div>
+        <label class="ctl"><span>Personas en el edificio <output id="oOcc" class="num"></output></span><input type="range" id="occ" min="0" max="150" value="85"></label>
+        <label class="ctl"><span>Temperatura exterior <output id="oTmp" class="num"></output></span><input type="range" id="tmp" min="14" max="28" step="0.5" value="22"></label>
+        <label class="check"><input type="checkbox" id="hor" checked> Hora dentro del horario de operación (laboral, 07–19 h)</label>
+      </div>
+      <div class="out" aria-live="polite">
+        <b id="pred" class="num">–</b>
+        <small id="predRange">kWh estimados</small>
+        <div class="gauge"><i id="gauge"></i></div>
+        <small>escala: 0 a 25 kWh/h</small>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="q" id="q4">
+  <div class="qhead"><span class="qn">4</span><h2>¿Qué le recomendamos al administrador?</h2>
+  <p class="lede">Atacar la carga base: es la energía que se paga sin que nadie la use.</p></div>
+  <ol class="recs">
+    <li><b>Apagado programado</b> de iluminación, pantallas y equipos a las 20:00 y durante los fines de semana, con temporizadores o el sistema de gestión del edificio.</li>
+    <li><b>Ronda nocturna de verificación</b> (una noche entre semana y un domingo) para listar qué queda encendido: servidores, bombas, neveras, cargadores, letreros.</li>
+    <li><b>Arranque escalonado del lunes</b>: encender HVAC y cargas grandes por etapas entre 06:30 y 07:30 para evitar picos como el de 52 kW.</li>
+  </ol>
+  <div class="panel save">
+    <h3>¿Cuánto se ahorraría?</h3>
+    <div class="sim">
+      <div>
+        <label class="ctl"><span>Reducción de la carga fuera de horario <output id="oRed" class="num"></output></span><input type="range" id="red" min="5" max="60" step="5" value="30"></label>
+        <label class="ctl"><span>Valor del kWh (COP)</span><input type="number" id="tar" value="850" min="0" step="10" inputmode="numeric"></label>
+        <p class="cap">El valor del kWh es una referencia: ajústelo al de la factura del edificio.</p>
+      </div>
+      <div class="out" aria-live="polite">
+        <b id="saveKwh" class="num">–</b>
+        <small id="saveTxt"></small>
+      </div>
+    </div>
+  </div>
+  <div class="panel">
+    <h3>Conclusión ejecutiva</h3>
+    <p id="conclusion"></p>
+    <p class="cap"><b>Limitación:</b> solo 45 días de abril y mayo, sin estaciones extremas ni medición por circuitos. El ahorro es una estimación que debe validarse con submedición antes de invertir.</p>
+  </div>
+</section>
+</main>
+<footer class="wrap">Análisis en Python (pandas, scikit-learn) · Visualización en HTML, CSS y JavaScript sin librerías externas.</footer>
+
+<script src="data/datos.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
